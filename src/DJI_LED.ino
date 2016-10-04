@@ -41,8 +41,9 @@ For more detail on the MIT license, see <http://opensource.org/licenses/MIT>
 #define RADIOIN2 11 // animation selector
 #define FADING_STEP 5
 #define BRIGHTNESS 30 // brightness 0-255  
+#define BITS 8 // number of led for each ring . stick
 
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(64, PIN);
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(4 * BITS, PIN);
 word statesL = 0x303; // two arm define
 word statesR = 0x303; // two arm define
 //word statesL = 0xC63; // tree arm define
@@ -103,11 +104,11 @@ void playAnimation(word animationSpeed, unsigned long int animationColor) {
 }
 
 void playNoAnimation(unsigned long int animationColor) {
-  for (byte i = 0; i < 16; i++) {
+  for (byte i = 0; i < BITS; i++) {
     pixels.setPixelColor(i, animationColor);
-    pixels.setPixelColor(i+16, animationColor);
-    pixels.setPixelColor(i+32, animationColor);
-    pixels.setPixelColor(i+48, animationColor);
+    pixels.setPixelColor(i + BITS, animationColor);
+    pixels.setPixelColor(i + 2 * BITS, animationColor);
+    pixels.setPixelColor(i + 3 * BITS, animationColor);
     pixels.setBrightness(BRIGHTNESS);
   }
   
@@ -118,13 +119,13 @@ void playAnimationRing(unsigned long int animationColor) {
   unsigned long int stateL = 0;
   unsigned long int stateR = 0;
   
-  for (byte i = 0; i < 16; i++) {
+  for (byte i = 0; i < BITS; i++) {
     stateL = (statesL >> i) & 0x0001;
     stateR = (statesR >> i) & 0x0001;
     pixels.setPixelColor(i, stateR * animationColor);
-    pixels.setPixelColor(i+16, stateL * animationColor);
-    pixels.setPixelColor(i+32, stateR * animationColor);
-    pixels.setPixelColor(i+48, stateL * animationColor);
+    pixels.setPixelColor(i + BITS, stateL * animationColor);
+    pixels.setPixelColor(i + 2 * BITS, stateR * animationColor);
+    pixels.setPixelColor(i + 3 * BITS, stateL * animationColor);
   }
   
   statesL = ROTL(statesL, 1);
@@ -137,7 +138,7 @@ void playAnimationFading(unsigned long int animationColor) {
   static byte direction = 1; // start direction fading
   static word intensity = 0;
 
-  for (byte i = 0; i < 64; i++) {
+  for (byte i = 0; i < 4 * BITS; i++) {
     pixels.setPixelColor(i, animationColor);
   }
   
