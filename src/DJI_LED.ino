@@ -61,14 +61,12 @@ void setup() {
 }
 
 word getAnimationSpeed(void) {
-  static const int animationSpeeds[] = { 0, 0, 0, 0, 0, 0, 320, 160, 80, 40, 20, 10 }; // speeds of animation
   // Read the radio 'gaz' command
   unsigned long int duration = pulseIn(RADIOIN1, HIGH, 25000);
-  // Determine the animation speed based on the previous read
-  byte animationSpeedIndex = (byte)(ceil((float)duration / 200.0f));
-  // Select the animation speed and limit the index in range 0 - 11
-  return animationSpeeds[((animationSpeedIndex <= 11) ? animationSpeedIndex : 11)];
+  // Return animation speed (linear) if stick is above the middle
+  return (duration>1500)?map(duration, 1500, 2000, 320, 10):0;
 }
+   
 
 unsigned long int getAnimationColor(word animationSpeed) {
   static const unsigned long int animationColors[] = { 0x000000, 0x00FF00, 0xFF0000, 0xFF9900 }; // colors of animation
